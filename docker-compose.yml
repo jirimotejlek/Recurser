@@ -16,21 +16,21 @@ services:
       - chroma_data:/chroma/chroma
     networks: [backend]
 
-  llm:
-    build: ./ollama
-    container_name: ollama-llm
-    restart: unless-stopped
-    ports:
-      - "11434:11434"
-    environment:
-      # Ollama settings
-      OLLAMA_HOST: "0.0.0.0"
-      OLLAMA_MODELS: "/root/.ollama/models"
-      # Model to preload
-      OLLAMA_MODEL: "gemma3n:e2b"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks: [backend]
+  # llm:
+  #   build: ./ollama
+  #   container_name: ollama-llm
+  #   restart: unless-stopped
+  #   ports:
+  #     - "11434:11434"
+  #   environment:
+  #     # Ollama settings
+  #     OLLAMA_HOST: "0.0.0.0"
+  #     OLLAMA_MODELS: "/root/.ollama/models"
+  #     # Model to preload
+  #     OLLAMA_MODEL: "gemma3n:e2b"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   networks: [backend]
     # GPU support (uncomment if you have NVIDIA GPU)
     # deploy:
     #   resources:
@@ -102,6 +102,8 @@ services:
       # ChromaDB connection
       CHROMA_HOST: chromadb
       CHROMA_PORT: 8000
+      LLMUSE: OpenAI
+      # LLMUSE: localmini
       # Ollama connection
       OLLAMA_HOST: llm
       OLLAMA_PORT: 11434
