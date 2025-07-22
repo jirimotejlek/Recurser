@@ -83,15 +83,30 @@ services:
       # ChromaDB connection
       CHROMA_HOST: chromadb
       CHROMA_PORT: 8000
+    volumes:
+      - ./optimizer:/app
+    networks: [backend]
+
+  llm-dispatcher:
+    build: ./llm_dispatcher
+    container_name: llm-dispatcher
+    restart: unless-stopped
+    ports:
+      - "5100:5100"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+      # ChromaDB connection
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
       # Ollama connection
       OLLAMA_HOST: llm
       OLLAMA_PORT: 11434
       OLLAMA_MODEL: "gemma3n:e2b"
-      # API settings
-      API_KEY: "your-secret-api-key-change-this"
     volumes:
-      - ./optimizer:/app
-    networks: [backend]
+      - ./llm_dispatcher:/app
+    networks: [backend]    
     
 volumes:
   chroma_data:

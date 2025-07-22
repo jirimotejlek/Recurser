@@ -132,13 +132,11 @@ def list_models():
 def index():
     """API documentation"""
     return jsonify({
-        'name': 'RAG API',
+        'name': 'LLM Dispatcher',
         'version': '1.0',
         'endpoints': {
             '/health': 'GET - Health check',
             '/query': 'POST - Direct LLM query',
-            '/rag_query': 'POST - RAG query (ChromaDB + LLM)',
-            '/collections': 'GET - List ChromaDB collections',
             '/models': 'GET - List available LLM models'
         },
         'documentation': {
@@ -146,7 +144,7 @@ def index():
                 'method': 'POST',
                 'body': {
                     'prompt': 'Your question here',
-                    'model': '(optional) model name'
+                    'model': 'model name [openai|local_small]'
                 }
             }
         }
@@ -154,4 +152,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5100, debug=True)
