@@ -1,0 +1,117 @@
+services:
+  chromadb:
+    image: chromadb/chroma:1.0.15
+    container_name: chromadb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # ChromaDB settings
+      IS_PERSISTENT: "TRUE"
+      PERSIST_DIRECTORY: "/chroma/chroma"
+      # Explicitly set the host and port
+      CHROMA_SERVER_HOST: "0.0.0.0"
+      CHROMA_SERVER_HTTP_PORT: "8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks: [backend]
+
+  llm:
+    build: ./ollama
+    container_name: ollama-llm
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      # Ollama settings
+      OLLAMA_HOST: "0.0.0.0"
+      OLLAMA_MODELS: "/root/.ollama/models"
+      # Model to preload
+      OLLAMA_MODEL: "gemma3n:e2b"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks: [backend]
+    # GPU support (uncomment if you have NVIDIA GPU)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  recurser-ui:
+    build: ./recurser_ui
+    container_name: recurser-ui
+    command: streamlit run /app/recurser_ui.py
+    ports: ["8501:8501"]
+    volumes:
+      - ./recurser_ui:/app
+      # for development
+      - ./recurser_ui/.streamlit/config.dev.toml:/app/.streamlit/config.toml
+      # for deployment
+      #- ./recurser_ui/.streamlit/config.prod.toml:/app/.streamlit/config.toml
+    environment:
+      # ChromaDB connection settings
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
+      # Ollama connection settings
+      OLLAMA_HOST: llm
+      OLLAMA_PORT: 11434
+      OLLAMA_MODEL: "gemma3n:e2b"
+      # Streamlit settings
+      STREAMLIT_WATCH_USE_POLLING: "true"
+      STREAMLIT_DEV_FRONTEND: "false"
+      # Python path for imports
+      PYTHONPATH: /app
+    networks: [backend]
+    
+volumes:
+  chroma_data:
+  ollama_data:
+
+networks:
+  backend:
+  
+# services:
+  # chromadb:
+    # image: chromadb/chroma:1.0.15
+    # container_name: chromadb
+    # restart: unless-stopped
+    # ports:
+      # - "8000:8000"
+    # environment:
+      # ChromaDB settings
+      # IS_PERSISTENT: "TRUE"
+      # PERSIST_DIRECTORY: "/chroma/chroma"
+      # Explicitly set the host and port
+      # CHROMA_SERVER_HOST: "0.0.0.0"
+      # CHROMA_SERVER_HTTP_PORT: "8000"
+    # volumes:
+      # - chroma_data:/chroma/chroma
+    # networks: [backend]
+# 
+  # recurser-ui:
+    # build: ./recurser_ui
+    # container_name: recurser-ui
+    # command: streamlit run /app/recurser_ui.py
+    # ports: ["8501:8501"]
+    # volumes:
+      # - ./recurser_ui:/app
+      # for development
+      # - ./recurser_ui/.streamlit/config.dev.toml:/app/.streamlit/config.toml
+      # for deployment
+      #- ./recurser_ui/.streamlit/config.prod.toml:/app/.streamlit/config.toml
+    # environment:
+      # ChromaDB connection settings
+      # CHROMA_HOST: chromadb
+      # CHROMA_PORT: 8000
+      # STREAMLIT_WATCH_USE_POLLING: "true"
+      # STREAMLIT_DEV_FRONTEND: "false"
+    # networks: [backend]
+# 
+# volumes:
+  # chroma_data:
+# 
+# networks:
+  # backend:
