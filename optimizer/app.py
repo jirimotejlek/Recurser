@@ -20,10 +20,12 @@ CHROMA_PORT = int(os.getenv('CHROMA_PORT', '8000'))
 OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'llm')
 OLLAMA_PORT = int(os.getenv('OLLAMA_PORT', '11434'))
 OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'gemma3n:e2b')
+LLM_DISPATCHER_HOST = os.getenv('LLM_DISPATCHER_HOST', 'api')
+LLM_DISPATCHER_PORT = int(os.getenv('LLM_DISPATCHER_PORT', '5100'))
 
 def query_ollama(prompt: str, model: str = None, stream: bool = False) -> Dict[str, Any]:
     """Send a query to Ollama"""
-    url = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/generate"
+    url = f"http://{LLM_DISPATCHER_HOST}:{LLM_DISPATCHER_PORT}/query"
     
     payload = {
         "model": model or OLLAMA_MODEL,
@@ -62,9 +64,9 @@ def health_check():
     except:
         health_status["services"]["chromadb"] = "down"
     
-    # Check Ollama
+    # Check llm dispatcher
     try:
-        response = requests.get(f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/tags", timeout=2)
+        response = requests.get(f"http://{LLM_DISPATCHER_HOST}:{LLM_DISPATCHER_PORT}/health", timeout=2)
         health_status["services"]["ollama"] = "up" if response.status_code == 200 else "down"
     except:
         health_status["services"]["ollama"] = "down"
@@ -78,7 +80,7 @@ def health_check():
 
 @app.route('/query', methods=['POST'])
 def query_llm():
-    """Direct query to LLM endpoint"""
+    """Requesting to llm dispatcher"""
     data = request.json
     
     if not data or 'prompt' not in data:
@@ -89,7 +91,9 @@ def query_llm():
     
     logger.info(f"Querying LLM with prompt: {prompt[:100]}...")
     
-    result = query_ollama(prompt, model)
+    optimized_prompt = f"Rewrite the following question into a concise and optimized search engine query for Google or Bing. Question: {prompt}"
+    logger.info(f"Optimized prompt: {optimized_prompt}")
+    result = requests.post(f"http://{LLM_DISPATCHER_HOST}:{LLM_DISPATCHER_PORT}/query", json={"prompt": optimized_prompt, "model": model})
     
     if 'error' in result:
         return jsonify(result), 500
@@ -104,28 +108,6 @@ def query_llm():
         'eval_count': result.get('eval_count', 0)
     })
 
-@app.route('/models', methods=['GET'])
-def list_models():
-    """List available Ollama models"""
-    try:
-        response = requests.get(f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/tags", timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            return jsonify({
-                'models': [
-                    {
-                        'name': model['name'],
-                        'size': model['size'],
-                        'modified': model['modified_at']
-                    }
-                    for model in data.get('models', [])
-                ],
-                'default_model': OLLAMA_MODEL
-            })
-        else:
-            return jsonify({'error': 'Failed to fetch models from Ollama'}), 500
-    except Exception as e:
-        return jsonify({'error': f'Failed to list models: {str(e)}'}), 500
 
 
 @app.route('/', methods=['GET'])
