@@ -57,7 +57,7 @@ def search_documents(query, collection, n_results=5):
 
 def run_main_app():
     """Main RAG application"""
-    st.title("RAG Application")
+    st.title("RAG Application!")
     st.write("Build your knowledge base and ask questions!")
     
     # Initialize ChromaDB

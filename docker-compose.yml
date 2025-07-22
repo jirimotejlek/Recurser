@@ -59,11 +59,38 @@ services:
       OLLAMA_HOST: llm
       OLLAMA_PORT: 11434
       OLLAMA_MODEL: "gemma3n:e2b"
+      # Optimizer
+      OPTIMIZER_HOST: api
+      OPTIMIZER_PORT: 5000
+      OPTIMIZER_KEY: "your-secret-api-key-change-this"      
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
       # Python path for imports
       PYTHONPATH: /app
+    networks: [backend]
+
+  optimizer:
+    build: ./optimizer
+    container_name: optimizer
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+      # ChromaDB connection
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
+      # Ollama connection
+      OLLAMA_HOST: llm
+      OLLAMA_PORT: 11434
+      OLLAMA_MODEL: "gemma3n:e2b"
+      # API settings
+      API_KEY: "your-secret-api-key-change-this"
+    volumes:
+      - ./optimizer:/app
     networks: [backend]
     
 volumes:
@@ -72,46 +99,3 @@ volumes:
 
 networks:
   backend:
-  
-# services:
-  # chromadb:
-    # image: chromadb/chroma:1.0.15
-    # container_name: chromadb
-    # restart: unless-stopped
-    # ports:
-      # - "8000:8000"
-    # environment:
-      # ChromaDB settings
-      # IS_PERSISTENT: "TRUE"
-      # PERSIST_DIRECTORY: "/chroma/chroma"
-      # Explicitly set the host and port
-      # CHROMA_SERVER_HOST: "0.0.0.0"
-      # CHROMA_SERVER_HTTP_PORT: "8000"
-    # volumes:
-      # - chroma_data:/chroma/chroma
-    # networks: [backend]
-# 
-  # recurser-ui:
-    # build: ./recurser_ui
-    # container_name: recurser-ui
-    # command: streamlit run /app/recurser_ui.py
-    # ports: ["8501:8501"]
-    # volumes:
-      # - ./recurser_ui:/app
-      # for development
-      # - ./recurser_ui/.streamlit/config.dev.toml:/app/.streamlit/config.toml
-      # for deployment
-      #- ./recurser_ui/.streamlit/config.prod.toml:/app/.streamlit/config.toml
-    # environment:
-      # ChromaDB connection settings
-      # CHROMA_HOST: chromadb
-      # CHROMA_PORT: 8000
-      # STREAMLIT_WATCH_USE_POLLING: "true"
-      # STREAMLIT_DEV_FRONTEND: "false"
-    # networks: [backend]
-# 
-# volumes:
-  # chroma_data:
-# 
-# networks:
-  # backend:
