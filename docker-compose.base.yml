@@ -15,31 +15,7 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
     networks: [backend]
-
-  # llm:
-  #   build: ./ollama
-  #   container_name: ollama-llm
-  #   restart: unless-stopped
-  #   ports:
-  #     - "11434:11434"
-  #   environment:
-  #     # Ollama settings
-  #     OLLAMA_HOST: "0.0.0.0"
-  #     OLLAMA_MODELS: "/root/.ollama/models"
-  #     # Model to preload
-  #     OLLAMA_MODEL: "gemma3n:e2b"
-  #   volumes:
-  #     - ollama_data:/root/.ollama
-  #   networks: [backend]
-    # GPU support (uncomment if you have NVIDIA GPU)
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
-
+  
   recurser-ui:
     build: ./recurser_ui
     container_name: recurser-ui
@@ -55,23 +31,16 @@ services:
       # ChromaDB connection settings
       CHROMA_HOST: chromadb
       CHROMA_PORT: 8000
-      # Ollama connection settings
-      OLLAMA_HOST: llm
-      OLLAMA_PORT: 11434
-      OLLAMA_MODEL: "gemma3n:e2b"
       # Optimizer
-      OPTIMIZER_HOST: api
+      OPTIMIZER_HOST: optimizer
       OPTIMIZER_PORT: 5050
-      #LLMUSE: OpenAI
-      LLMUSE: localmini
-      OPTIMIZER_KEY: "your-secret-api-key-change-this"      
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
       # Python path for imports
       PYTHONPATH: /app
     networks: [backend]
-
+  
   optimizer:
     build: ./optimizer
     container_name: optimizer
@@ -88,7 +57,7 @@ services:
     volumes:
       - ./optimizer:/app
     networks: [backend]
-
+  
   llm-dispatcher:
     build: ./llm_dispatcher
     container_name: llm-dispatcher
@@ -102,16 +71,10 @@ services:
       # ChromaDB connection
       CHROMA_HOST: chromadb
       CHROMA_PORT: 8000
-      LLMUSE: OpenAI
-      # LLMUSE: localmini
-      # Ollama connection
-      OLLAMA_HOST: llm
-      OLLAMA_PORT: 11434
-      OLLAMA_MODEL: "gemma3n:e2b"
     volumes:
       - ./llm_dispatcher:/app
     networks: [backend]    
-    
+   
 volumes:
   chroma_data:
   ollama_data:
