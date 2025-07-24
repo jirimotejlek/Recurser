@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Environment variables
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 CHROMA_HOST = os.getenv('CHROMA_HOST', 'chromadb')
 CHROMA_PORT = int(os.getenv('CHROMA_PORT', '8000'))
 OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'llm')
