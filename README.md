@@ -7,38 +7,6 @@ It supports **hot reload** for rapid development and works well with **VS Code D
 
 ---
 
-## 📂 Project structure
-
-```
-project-root/
-  │
-  ├── 📄 docker-compose.yml
-  ├── 📄 docker-compose.base.yml
-  ├── 📄 docker-compose.local.yml
-  ├── 📄 docker-compose.external.yml
-  ├── 📄 recurser.sh (macOS/Linux)
-  ├── 📄 recurser (Windows)
-  │
-  ├── 📂 env-templates/
-  │   ├── 📄 openai
-  │   ├── 📄 anthropic
-  │   ├── 📄 mistral
-  │   └── 📄 custom
-  │
-  ├── 📂 recurser-ui/
-  │   ├── 📄 Dockerfile
-  │   ├── 📄 requirements.txt
-  │   ├── 📄 recurser_app.py
-  │   └── 📂 .streamlit/
-  │       ├── 📄 config.dev.toml
-  │       └── 📄 config.prod.toml
-  │  
-  └── 📂 ollama/
-      ├── 📄 Dockerfile
-```
-
----
-
 ## 🧠 External vs Local LLM
 
 You can use this project with a **local LLM** (via Ollama) or connect it to an **external API** (OpenAI, Anthropic, etc.).
@@ -239,6 +207,8 @@ recurser restart           # Resume work later
 - **Custom** - Any OpenAI-compatible API
 
 See `env-templates/` for configuration examples.
+
+The appropriate python module will be installed during the build phase.
 
 ---
 

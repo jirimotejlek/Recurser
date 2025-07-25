@@ -34,6 +34,9 @@ services:
       # Optimizer
       OPTIMIZER_HOST: optimizer
       OPTIMIZER_PORT: 5050
+      # LLM Dispatcher
+      LLM_DISPATCHER: llm-dispatcher
+      LLM_DISPATCHER_PORT: 5100
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
@@ -59,7 +62,10 @@ services:
     networks: [backend]
   
   llm-dispatcher:
-    build: ./llm_dispatcher
+    build:
+      context: ./llm_dispatcher
+      args:
+        LLM_PROVIDER: ${LLM_PROVIDER:-local}
     container_name: llm-dispatcher
     restart: unless-stopped
     ports:
