@@ -18,7 +18,7 @@ except Exception as e:
     CHROMADB_VERSION = None
     st.error(f"Error loading ChromaDB: {e}")
 
-def run_chromadb_test():
+def streamlit_page():
     """ChromaDB Connection Test Page"""
     st.title("ChromaDB Connection Test")
     
