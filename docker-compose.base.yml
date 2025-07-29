@@ -60,6 +60,20 @@ services:
     volumes:
       - ./optimizer:/app
     networks: [backend]
+
+  search-engine:
+    build: ./search_engine
+    container_name: search-engine
+    restart: unless-stopped
+    ports:
+      - "5150:5150"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+    volumes:
+      - ./search_engine:/app
+    networks: [backend]
   
   llm-dispatcher:
     build:
