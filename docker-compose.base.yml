@@ -102,6 +102,9 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
+      # ChromaDB connection settings
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
     volumes:
       - ./rag_builder:/app
     networks: [backend]
