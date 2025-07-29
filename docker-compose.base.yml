@@ -60,9 +60,9 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
-      # ChromaDB connection
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
+      # LLM Dispatcher
+      LLM_DISPATCHER: llm-dispatcher
+      LLM_DISPATCHER_PORT: 5100
     volumes:
       - ./optimizer:/app
     networks: [backend]
@@ -122,9 +122,6 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
-      # ChromaDB connection
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
     volumes:
       - ./llm_dispatcher:/app
     networks: [backend]    
