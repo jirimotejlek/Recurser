@@ -12,11 +12,9 @@ def run_query_pipeline(user_query: str) -> dict:
     try:
         # Step 1: Call optimiser (using the query endpoint)
         st.info("🔄 Optimizing your query...")
-        optimization_prompt = f"Optimize this search query for better web search results: '{user_query}'. Return only the optimized query, nothing else."
-
         response = requests.post(
             "http://optimizer:5050/query",
-            json={"prompt": optimization_prompt},
+            json={"query": user_query},
             timeout=30,
         )
 

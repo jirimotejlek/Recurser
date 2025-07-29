@@ -29,46 +29,51 @@ def streamlit_page():
         border-left: 4px solid #667eea;
         margin: 1rem 0;
     }
+
+        /* Hover effect for Get Answer button only */
+    .stButton > button:hover {
+        cursor: pointer;
+        transform: translateY(-2px);
+        transition: transform 0.2s ease;
+    }
+
+    .stButton > button:active {
+        transform: translateY(0);
+    }
+
+    /* Enhanced text area styling */
+    .stTextArea > div > div > textarea {
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        transition: border-color 0.3s ease;
+    }
+
+    .stTextArea > div > div > textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Progress bar enhancement */
+    .stProgress > div > div > div > div {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
     </style>
     """,
         unsafe_allow_html=True,
     )
 
-    # System status indicator (temporarily simplified)
-    with st.expander("🔧 System Status", expanded=False):
-        st.info("System status monitoring temporarily disabled for debugging")
-        if st.button("🔄 Check Services", use_container_width=True):
-            st.info("Service checking temporarily disabled")
-
     # Query input section
-    st.subheader("🔍 Ask Your Question")
-
-    # Enhanced query input with examples
     with st.container():
         user_query = st.text_area(
-            "Enter your question below:",
+            "",
             placeholder="e.g., What are the latest developments in quantum computing?",
             height=100,
             help="Ask any question and our AI will search the web and provide a comprehensive answer.",
         )
 
-        # Example queries
-        with st.expander("💡 Example Questions", expanded=False):
-            st.markdown(
-                """
-            - What are the benefits of renewable energy?
-            - How does machine learning work?
-            - What are the latest trends in artificial intelligence?
-            - Explain the concept of blockchain technology
-            - What are the health benefits of meditation?
-            """
-            )
-
     # Submit button with enhanced styling
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # Temporarily disable system readiness check
-        system_ready = True  # We'll add this back later
         submit_button = st.button(
             "🚀 Get Answer",
             type="primary",
@@ -196,19 +201,3 @@ def streamlit_page():
             """,
                 unsafe_allow_html=True,
             )
-
-    # Footer with helpful information
-    st.markdown("---")
-    st.markdown(
-        """
-    <div class="info-box">
-        <h5>💡 How it works:</h5>
-        <ol>
-            <li><strong>Query Optimization:</strong> Your question is enhanced for better search results</li>
-            <li><strong>Web Search:</strong> Our system searches the internet for relevant information</li>
-            <li><strong>AI Analysis:</strong> An AI model analyzes the search results and generates a comprehensive answer</li>
-        </ol>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )

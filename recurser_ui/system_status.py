@@ -58,6 +58,8 @@ def get_system_status() -> Dict:
         "Optimizer": "http://optimizer:5050/health",
         "Search Engine": "http://search-engine:5150/health",
         "LLM Dispatcher": "http://llm-dispatcher:5100/health",
+        "Scraper": "http://scraper:5200/health",
+        "RAG Builder": "http://rag-builder:5300/health",
         "ChromaDB": "http://chromadb:8000/api/v2/heartbeat",
     }
 
