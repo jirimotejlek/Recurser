@@ -25,7 +25,8 @@ def health_check():
     health_status = {
         "status": "healthy",
         "services": {
-            "llm_dispatcher": "up"
+            "llm_dispatcher": "up",
+            "optimizer": "up"
         }
     }
     # Check llm dispatcher
