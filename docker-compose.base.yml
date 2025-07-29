@@ -15,6 +15,7 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
     networks: [backend]
+<<<<<<< HEAD:docker-compose.yml
 
   # llm:
   #   build: ./ollama
@@ -40,6 +41,9 @@ services:
     #           count: all
     #           capabilities: [gpu]
 
+=======
+  
+>>>>>>> 77fa0da946314f443835eda2839689281d280be1:docker-compose.base.yml
   recurser-ui:
     build: ./recurser_ui
     container_name: recurser-ui
@@ -55,26 +59,28 @@ services:
       # ChromaDB connection settings
       CHROMA_HOST: chromadb
       CHROMA_PORT: 8000
-      # Ollama connection settings
-      OLLAMA_HOST: llm
-      OLLAMA_PORT: 11434
-      OLLAMA_MODEL: "gemma3n:e2b"
       # Optimizer
-      OPTIMIZER_HOST: api
+      OPTIMIZER_HOST: optimizer
       OPTIMIZER_PORT: 5050
+<<<<<<< HEAD:docker-compose.yml
       # llm dispatcher
       LLM_DISPATCHER_HOST: api
       LLM_DISPATCHER_PORT: 5100
       #LLMUSE: OpenAI
       LLMUSE: localmini
       OPTIMIZER_KEY: "your-secret-api-key-change-this"      
+=======
+      # LLM Dispatcher
+      LLM_DISPATCHER: llm-dispatcher
+      LLM_DISPATCHER_PORT: 5100
+>>>>>>> 77fa0da946314f443835eda2839689281d280be1:docker-compose.base.yml
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
       # Python path for imports
       PYTHONPATH: /app
     networks: [backend]
-
+  
   optimizer:
     build: ./optimizer
     container_name: optimizer
@@ -92,8 +98,25 @@ services:
       - ./optimizer:/app
     networks: [backend]
 
+  search-engine:
+    build: ./search_engine
+    container_name: search-engine
+    restart: unless-stopped
+    ports:
+      - "5150:5150"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+    volumes:
+      - ./search_engine:/app
+    networks: [backend]
+  
   llm-dispatcher:
-    build: ./llm_dispatcher
+    build:
+      context: ./llm_dispatcher
+      args:
+        LLM_PROVIDER: ${LLM_PROVIDER:-local}
     container_name: llm-dispatcher
     restart: unless-stopped
     ports:
@@ -105,14 +128,10 @@ services:
       # ChromaDB connection
       CHROMA_HOST: chromadb
       CHROMA_PORT: 8000
-      # Ollama connection
-      OLLAMA_HOST: llm
-      OLLAMA_PORT: 11434
-      OLLAMA_MODEL: "gemma3n:e2b"
     volumes:
       - ./llm_dispatcher:/app
     networks: [backend]    
-    
+   
 volumes:
   chroma_data:
   ollama_data:
