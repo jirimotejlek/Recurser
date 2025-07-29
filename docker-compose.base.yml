@@ -40,13 +40,16 @@ services:
       # Search Engine
       SEARCH_ENGINE: search-engine
       SEARCH_ENGINE_PORT: 5150
+      # Scraper
+      SCRAPER: scraper
+      SCRAPER_PORT: 5200
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
       # Python path for imports
       PYTHONPATH: /app
     networks: [backend]
-  
+
   optimizer:
     build: ./optimizer
     container_name: optimizer
