@@ -15,35 +15,7 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
     networks: [backend]
-<<<<<<< HEAD:docker-compose.yml
-
-  # llm:
-  #   build: ./ollama
-  #   container_name: ollama-llm
-  #   restart: unless-stopped
-  #   ports:
-  #     - "11434:11434"
-  #   environment:
-  #     # Ollama settings
-  #     OLLAMA_HOST: "0.0.0.0"
-  #     OLLAMA_MODELS: "/root/.ollama/models"
-  #     # Model to preload
-  #     OLLAMA_MODEL: "gemma3n:e2b"
-  #   volumes:
-  #     - ollama_data:/root/.ollama
-  #   networks: [backend]
-    # GPU support (uncomment if you have NVIDIA GPU)
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
-
-=======
   
->>>>>>> 77fa0da946314f443835eda2839689281d280be1:docker-compose.base.yml
   recurser-ui:
     build: ./recurser_ui
     container_name: recurser-ui
@@ -62,18 +34,9 @@ services:
       # Optimizer
       OPTIMIZER_HOST: optimizer
       OPTIMIZER_PORT: 5050
-<<<<<<< HEAD:docker-compose.yml
-      # llm dispatcher
-      LLM_DISPATCHER_HOST: api
-      LLM_DISPATCHER_PORT: 5100
-      #LLMUSE: OpenAI
-      LLMUSE: localmini
-      OPTIMIZER_KEY: "your-secret-api-key-change-this"      
-=======
       # LLM Dispatcher
       LLM_DISPATCHER: llm-dispatcher
       LLM_DISPATCHER_PORT: 5100
->>>>>>> 77fa0da946314f443835eda2839689281d280be1:docker-compose.base.yml
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
@@ -91,9 +54,9 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
-      # ChromaDB connection
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
+      # LLM Dispatcher
+      LLM_DISPATCHER: llm-dispatcher
+      LLM_DISPATCHER_PORT: 5100
     volumes:
       - ./optimizer:/app
     networks: [backend]
@@ -125,9 +88,6 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
-      # ChromaDB connection
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
     volumes:
       - ./llm_dispatcher:/app
     networks: [backend]    
