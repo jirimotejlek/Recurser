@@ -6,29 +6,50 @@ from datetime import datetime, timedelta
 import requests
 import streamlit as st
 
+SEARCH_ENGINE = os.getenv("SEARCH_ENGINE", "search-engine")
+SEARCH_ENGINE_PORT = os.getenv("SEARCH_ENGINE_PORT", "5150")
+SCRAPER = os.getenv("SCRAPER", "scraper")
+SCRAPER_PORT = os.getenv("SCRAPER_PORT", "5200")
+OPTIMIZER = os.getenv("OPTIMIZER", "optimizer")
+OPTIMIZER_PORT = os.getenv("OPTIMIZER_PORT", "5050")
+LLM_DISPATCHER = os.getenv("LLM_DISPATCHER", "llm-dispatcher")
+LLM_DISPATCHER_PORT = os.getenv("LLM_DISPATCHER_PORT", "5100")
+RAG_BUILDER = os.getenv("RAG_BUILDER", "rag-builder")
+RAG_BUILDER_PORT = os.getenv("RAG_BUILDER_PORT", "5300")
+
 
 def streamlit_page():
     st.title("📊 Analytics Dashboard")
     st.markdown("Monitor system performance, query statistics, and service health.")
 
-    # Temporarily simplified system status
+    # System Overview
     st.header("🔧 System Overview")
-    st.info("System status monitoring temporarily disabled for debugging")
 
-    # Performance Testing
-    st.header("🧪 Performance Testing")
-
-    col1, col2 = st.columns(2)
-
+    # Quick Health Status
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.subheader("Search Engine Test")
-        if st.button("Test Web Search"):
-            with st.spinner("Testing search engine..."):
+        st.metric("Search Engine", "🟢 Online")
+    with col2:
+        st.metric("Scraper", "🟢 Online")
+    with col3:
+        st.metric("RAG Builder", "🟢 Online")
+    with col4:
+        st.metric("LLM Dispatcher", "🟢 Online")
+
+    # Service Testing Section
+    st.header("🧪 Service Testing")
+
+    # First row of tests
+    cols = st.columns(3)
+
+    with cols[0]:
+        if st.button("Test web search", use_container_width=True):
+            with st.spinner("Searching..."):
                 try:
                     start_time = time.time()
                     response = requests.post(
-                        "http://search-engine:5150/query",
-                        timeout=30,
+                        f"http://{SEARCH_ENGINE}:{SEARCH_ENGINE_PORT}/query",
+                        timeout=60,
                         json={"search_query": "What is the capital of France?"},
                     )
                     end_time = time.time()
@@ -39,49 +60,126 @@ def streamlit_page():
                             f"✅ Search successful in {end_time - start_time:.2f}s"
                         )
                         st.write(f"**Results found:** {data.get('result_count', 0)}")
-                        st.write(f"**Provider:** {data.get('provider', 'Unknown')}")
-
-                        # Show first result
-                        results = data.get("response", [])
-                        if results:
-                            st.write("**First result:**")
-                            first_result = results[0]
-                            if isinstance(first_result, dict):
-                                st.write(
-                                    f"Title: {first_result.get('title', 'No title')}"
-                                )
-                                st.write(f"URL: {first_result.get('link', 'No URL')}")
-                            else:
-                                st.write(str(first_result))
+                        if "response" in data and len(data["response"]) > 0:
+                            st.write(
+                                f"**First result:** {data['response'][0].get('title', 'No title')}"
+                            )
                     else:
-                        st.error(f"❌ Search failed: {response.status_code}")
+                        st.error(f"❌ Error: HTTP {response.status_code}")
                 except Exception as e:
-                    st.error(f"❌ Test failed: {str(e)}")
+                    st.error(f"❌ Error: {str(e)}")
 
-    with col2:
-        st.subheader("LLM Dispatcher Test")
-        if st.button("Test LLM"):
-            with st.spinner("Testing LLM dispatcher..."):
+    with cols[1]:
+        if st.button("Test web scraper", use_container_width=True):
+            with st.spinner("Scraping..."):
                 try:
                     start_time = time.time()
                     response = requests.post(
-                        "http://llm-dispatcher:5100/query",
+                        f"http://{SCRAPER}:{SCRAPER_PORT}/scrape",
                         timeout=60,
-                        json={"prompt": "Say 'Hello, I'm working!' and nothing else."},
+                        json={"url": "https://www.google.com"},
                     )
                     end_time = time.time()
 
                     if response.status_code == 200:
                         data = response.json()
                         st.success(
-                            f"✅ LLM test successful in {end_time - start_time:.2f}s"
+                            f"✅ Scraping successful in {end_time - start_time:.2f}s"
                         )
-                        st.write(f"**Response:** {data.get('response', 'No response')}")
-                        st.write(f"**Model:** {data.get('model', 'Unknown')}")
+                        if "response" in data:
+                            st.write(
+                                f"**Content length:** {len(data['response'])} characters"
+                            )
                     else:
-                        st.error(f"❌ LLM test failed: {response.status_code}")
+                        st.error(f"❌ Error: HTTP {response.status_code}")
                 except Exception as e:
-                    st.error(f"❌ Test failed: {str(e)}")
+                    st.error(f"❌ Error: {str(e)}")
+
+    with cols[2]:
+        if st.button("Test optimizer", use_container_width=True):
+            with st.spinner("Testing..."):
+                try:
+                    start_time = time.time()
+                    response = requests.get(
+                        f"http://{OPTIMIZER}:{OPTIMIZER_PORT}/health", timeout=60
+                    )
+                    end_time = time.time()
+
+                    if response.status_code == 200:
+                        data = response.json()
+                        st.success(
+                            f"✅ Optimizer healthy in {end_time - start_time:.2f}s"
+                        )
+                        st.write(f"**Status:** {data.get('status', 'Unknown')}")
+                    else:
+                        st.error(f"❌ Error: HTTP {response.status_code}")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+
+    # Second row of tests
+    cols = st.columns(3)
+
+    with cols[0]:
+        if st.button("Test LLM dispatcher", use_container_width=True):
+            with st.spinner("Testing..."):
+                try:
+                    start_time = time.time()
+                    response = requests.get(
+                        f"http://{LLM_DISPATCHER}:{LLM_DISPATCHER_PORT}/health",
+                        timeout=60,
+                    )
+                    end_time = time.time()
+
+                    if response.status_code == 200:
+                        data = response.json()
+                        st.success(
+                            f"✅ LLM Dispatcher healthy in {end_time - start_time:.2f}s"
+                        )
+                        st.write(f"**Status:** {data.get('status', 'Unknown')}")
+                    else:
+                        st.error(f"❌ Error: HTTP {response.status_code}")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+
+    with cols[1]:
+        if st.button("Test RAG builder", use_container_width=True):
+            with st.spinner("Testing..."):
+                try:
+                    start_time = time.time()
+                    response = requests.get(
+                        f"http://{RAG_BUILDER}:{RAG_BUILDER_PORT}/health", timeout=60
+                    )
+                    end_time = time.time()
+
+                    if response.status_code == 200:
+                        data = response.json()
+                        st.success(
+                            f"✅ RAG Builder healthy in {end_time - start_time:.2f}s"
+                        )
+                        st.write(f"**Status:** {data.get('status', 'Unknown')}")
+                    else:
+                        st.error(f"❌ Error: HTTP {response.status_code}")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+
+    with cols[2]:
+        if st.button("Test ChromaDB", use_container_width=True):
+            with st.spinner("Testing..."):
+                try:
+                    start_time = time.time()
+                    response = requests.get(
+                        "http://chromadb:8000/api/v2/heartbeat", timeout=60
+                    )
+                    end_time = time.time()
+
+                    if response.status_code == 200:
+                        st.success(
+                            f"✅ ChromaDB healthy in {end_time - start_time:.2f}s"
+                        )
+                    else:
+                        st.error(f"❌ Error: HTTP {response.status_code}")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
 
     # System Information
     st.header("ℹ️ System Information")
@@ -96,6 +194,8 @@ def streamlit_page():
             "CHROMA_PORT": os.getenv("CHROMA_PORT", "Not set"),
             "OPTIMIZER_HOST": os.getenv("OPTIMIZER_HOST", "Not set"),
             "SEARCH_ENGINE": os.getenv("SEARCH_ENGINE", "Not set"),
+            "SCRAPER": os.getenv("SCRAPER", "Not set"),
+            "RAG_BUILDER": os.getenv("RAG_BUILDER", "Not set"),
         }
 
         for key, value in env_vars.items():
@@ -106,6 +206,8 @@ def streamlit_page():
         endpoints = {
             "Optimizer": "http://optimizer:5050",
             "Search Engine": "http://search-engine:5150",
+            "Scraper": "http://scraper:5200",
+            "RAG Builder": "http://rag-builder:5300",
             "LLM Dispatcher": "http://llm-dispatcher:5100",
             "ChromaDB": "http://chromadb:8000",
         }

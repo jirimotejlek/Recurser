@@ -40,13 +40,16 @@ services:
       # Search Engine
       SEARCH_ENGINE: search-engine
       SEARCH_ENGINE_PORT: 5150
+      # Scraper
+      SCRAPER: scraper
+      SCRAPER_PORT: 5200
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"
       # Python path for imports
       PYTHONPATH: /app
     networks: [backend]
-  
+
   optimizer:
     build: ./optimizer
     container_name: optimizer
@@ -57,9 +60,9 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
-      # ChromaDB connection
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
+      # LLM Dispatcher
+      LLM_DISPATCHER: llm-dispatcher
+      LLM_DISPATCHER_PORT: 5100
     volumes:
       - ./optimizer:/app
     networks: [backend]
@@ -77,7 +80,38 @@ services:
     volumes:
       - ./search_engine:/app
     networks: [backend]
-  
+
+  scraper:
+    build: ./scraper
+    container_name: scraper
+    restart: unless-stopped
+    ports:
+      - "5200:5200"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+    volumes:
+      - ./scraper:/app
+    networks: [backend]
+
+  rag-builder:
+    build: ./rag_builder
+    container_name: rag-builder
+    restart: unless-stopped
+    ports:
+      - "5300:5300"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+      # ChromaDB connection settings
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
+    volumes:
+      - ./rag_builder:/app
+    networks: [backend]
+
   llm-dispatcher:
     build:
       context: ./llm_dispatcher
@@ -91,9 +125,6 @@ services:
       # Flask settings
       FLASK_ENV: development
       FLASK_DEBUG: "true"
-      # ChromaDB connection
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
     volumes:
       - ./llm_dispatcher:/app
     networks: [backend]    
