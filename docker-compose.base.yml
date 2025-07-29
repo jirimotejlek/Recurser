@@ -77,7 +77,21 @@ services:
     volumes:
       - ./search_engine:/app
     networks: [backend]
-  
+
+  scraper:
+    build: ./scraper
+    container_name: scraper
+    restart: unless-stopped
+    ports:
+      - "5200:5200"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+    volumes:
+      - ./scraper:/app
+    networks: [backend]
+
   llm-dispatcher:
     build:
       context: ./llm_dispatcher
