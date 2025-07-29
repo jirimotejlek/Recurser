@@ -92,6 +92,20 @@ services:
       - ./scraper:/app
     networks: [backend]
 
+  rag-builder:
+    build: ./rag_builder
+    container_name: rag-builder
+    restart: unless-stopped
+    ports:
+      - "5300:5300"
+    environment:
+      # Flask settings
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+    volumes:
+      - ./rag_builder:/app
+    networks: [backend]
+
   llm-dispatcher:
     build:
       context: ./llm_dispatcher
