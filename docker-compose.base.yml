@@ -37,6 +37,9 @@ services:
       # LLM Dispatcher
       LLM_DISPATCHER: llm-dispatcher
       LLM_DISPATCHER_PORT: 5100
+      # Search Engine
+      SEARCH_ENGINE: search-engine
+      SEARCH_ENGINE_PORT: 5150
       # Streamlit settings
       STREAMLIT_WATCH_USE_POLLING: "true"
       STREAMLIT_DEV_FRONTEND: "false"

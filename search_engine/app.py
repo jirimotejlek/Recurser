@@ -4,7 +4,7 @@ import requests
 import os
 from functools import wraps
 from typing import Dict, List, Any, Optional
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 import logging
 
 # Initialize Flask app
@@ -32,7 +32,7 @@ def search_engine_request():
 
     # Standardize response format
     response_data = {
-        'response': result.get('response', ''),
+        'response': result,
         'provider': 'duckduckgo',
         'model': 'unknown'
     }
@@ -40,4 +40,4 @@ def search_engine_request():
     return jsonify(response_data)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5100, debug=True)
+    app.run(host='0.0.0.0', port=5150, debug=True)
