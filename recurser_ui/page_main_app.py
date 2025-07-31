@@ -11,26 +11,46 @@ def streamlit_page():
         "Ask complex questions and let our AI-powered RAG pipeline find comprehensive answers from the web."
     )
 
-    # Add some styling
+    # Add theme-aware styling
     st.markdown(
         """
     <style>
-    .main-header {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        padding: 1rem;
-        border-radius: 10px;
-        color: white;
-        margin-bottom: 2rem;
+    :root {
+        --primary-gradient: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        --primary-color: #667eea;
+        --border-radius: 10px;
     }
-    .info-box {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #667eea;
+    
+    /* Theme-aware answer box */
+    .answer-box {
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        border-left: 5px solid var(--primary-color);
         margin: 1rem 0;
+        transition: all 0.3s ease;
+    }
+    
+    .answer-box:hover {
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .answer-title {
+        margin-top: 0;
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .answer-content {
+        margin-bottom: 0;
+        line-height: 1.6;
+        color: var(--text-color);
     }
 
-        /* Hover effect for Get Answer button only */
+    /* Hover effect for buttons */
     .stButton > button:hover {
         cursor: pointer;
         transform: translateY(-2px);
@@ -43,19 +63,48 @@ def streamlit_page():
 
     /* Enhanced text area styling */
     .stTextArea > div > div > textarea {
-        border: 2px solid #e1e5e9;
         border-radius: 8px;
         transition: border-color 0.3s ease;
     }
 
     .stTextArea > div > div > textarea:focus {
-        border-color: #667eea;
+        border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     /* Progress bar enhancement */
     .stProgress > div > div > div > div {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
+    }
+    
+    /* Detect theme and set CSS variables */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --background-color: rgba(28, 31, 36, 0.6);
+            --border-color: rgba(250, 250, 250, 0.2);
+            --text-color: #fafafa;
+        }
+    }
+    
+    @media (prefers-color-scheme: light) {
+        :root {
+            --background-color: rgba(240, 242, 246, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-color: #262730;
+        }
+    }
+    
+    /* Fallback for browsers that don't support prefers-color-scheme */
+    [data-theme="dark"] {
+        --background-color: rgba(28, 31, 36, 0.6);
+        --border-color: rgba(250, 250, 250, 0.2);
+        --text-color: #fafafa;
+    }
+    
+    [data-theme="light"] {
+        --background-color: rgba(240, 242, 246, 0.8);
+        --border-color: rgba(0, 0, 0, 0.1);
+        --text-color: #262730;
     }
     </style>
     """,
@@ -138,15 +187,9 @@ def streamlit_page():
                     # Create a styled answer box
                     st.markdown(
                         f"""
-                    <div style="
-                        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                        padding: 1.5rem;
-                        border-radius: 10px;
-                        border-left: 5px solid #667eea;
-                        margin: 1rem 0;
-                    ">
-                        <h4 style="margin-top: 0; color: #2c3e50;">Answer:</h4>
-                        <p style="margin-bottom: 0; line-height: 1.6; color: #34495e;">{answer}</p>
+                    <div class="answer-box">
+                        <h4 class="answer-title">Answer:</h4>
+                        <p class="answer-content">{answer}</p>
                     </div>
                     """,
                         unsafe_allow_html=True,
@@ -188,15 +231,9 @@ def streamlit_page():
             answer = result.get("answer", "No answer was generated.")
             st.markdown(
                 f"""
-            <div style="
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                padding: 1.5rem;
-                border-radius: 10px;
-                border-left: 5px solid #667eea;
-                margin: 1rem 0;
-            ">
-                <h4 style="margin-top: 0; color: #2c3e50;">Previous Answer:</h4>
-                <p style="margin-bottom: 0; line-height: 1.6; color: #34495e;">{answer}</p>
+            <div class="answer-box">
+                <h4 class="answer-title">Previous Answer:</h4>
+                <p class="answer-content">{answer}</p>
             </div>
             """,
                 unsafe_allow_html=True,
