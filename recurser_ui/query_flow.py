@@ -1,9 +1,18 @@
 import json
+import os
 from typing import Dict, List, Optional
 
 import requests
 import streamlit as st
 
+SEARCH_ENGINE = os.getenv("SEARCH_ENGINE", "search-engine")
+SEARCH_ENGINE_PORT = os.getenv("SEARCH_ENGINE_PORT", "5150")
+SCRAPER = os.getenv("SCRAPER", "scraper")
+SCRAPER_PORT = os.getenv("SCRAPER_PORT", "5200")
+OPTIMIZER = os.getenv("OPTIMIZER", "optimizer")
+OPTIMIZER_PORT = os.getenv("OPTIMIZER_PORT", "5050")
+LLM_DISPATCHER = os.getenv("LLM_DISPATCHER", "llm-dispatcher")
+LLM_DISPATCHER_PORT = os.getenv("LLM_DISPATCHER_PORT", "5100")
 
 def run_query_pipeline(user_query: str) -> dict:
     """
@@ -13,7 +22,7 @@ def run_query_pipeline(user_query: str) -> dict:
         # Step 1: Call optimiser (using the query endpoint)
         st.info("🔄 Optimizing your query...")
         response = requests.post(
-            "http://optimizer:5050/query",
+            f"http://{OPTIMIZER}:{OPTIMIZER_PORT}/query",
             json={"query": user_query},
             timeout=30,
         )
@@ -36,7 +45,7 @@ def run_query_pipeline(user_query: str) -> dict:
         # Step 2: Call search engine
         st.info("🔍 Searching the web...")
         search_response = requests.post(
-            "http://search-engine:5150/query",
+            f"http://{SEARCH_ENGINE}:{SEARCH_ENGINE_PORT}/query",
             json={"search_query": optimal_query},
             timeout=60,
         )
@@ -94,7 +103,7 @@ Search Results:
 Please provide a detailed, accurate answer based on the search results above. If the search results don't contain enough information to answer the question, please say so."""
 
         llm_response = requests.post(
-            "http://llm-dispatcher:5100/query", json={"prompt": llm_prompt}, timeout=120
+            f"http://{LLM_DISPATCHER}:{LLM_DISPATCHER_PORT}/query", json={"prompt": llm_prompt}, timeout=120
         )
 
         if llm_response.status_code != 200:
